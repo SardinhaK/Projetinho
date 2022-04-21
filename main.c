@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <math.h>
 // AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+// dsakldjasldjasd
+
 
 float d2(Vector2 a, Vector2 b) {
     return ((a.x - b.x) * (a.x - b.x)) + ((a.y - b.y) * (a.y - b.y));
