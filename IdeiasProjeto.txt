@@ -1,2 +1,22 @@
-Joguinho tipo Cup Head, se ficar muito dificil é Metal Slug.
+A história é que o menino ney caiu em uma realidade alternativa em que a copa do mundo é resolvida na bala no Catar.
+Os inimigos com camisas das seleções vão vindo no carrinho e o ney devolve no chumbo.
 
+
+Estilo: Game de plataforma.
+
+opção 1: Um espaço fechado com os inimigos vindo de todas as direções estilo Cuphead.
+
+opção 2: Caminho linear avançando contra os inimigos em sequência estilo Metal Slug.
+
+
+
+OBJETIVO: Nota é o de menos, prever o caminho do hexa corretamente é a meta principal.
+
+
+
+
+
+Nome do jogo:
+Funções de cada um:
+Animação:
+Sonoplastia:
