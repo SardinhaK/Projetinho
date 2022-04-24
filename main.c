@@ -5,7 +5,7 @@
 int main(){
 
     InitWindow(900, 600, "Tela");
-
+    //AAAAAAAAAAAAAAAAAAAAAAAAAA
     CloseWindow();
     
     return 0;
