@@ -27,6 +27,7 @@ int main(){
         if (IsKeyDown(KEY_LEFT)) posPlayer.x -= 4.0f;
         if (IsKeyDown(KEY_UP)) posPlayer.y -= 4.0f;
         if (IsKeyDown(KEY_DOWN)) posPlayer.y += 4.0f;
+        if (telaPassando <= -fundo.width) telaPassando = 0; 
        
 
 
@@ -40,10 +41,9 @@ int main(){
             } break;
             case GAMEPLAY:
             {
-                if (telaPassando <= -fundo.width*2) telaPassando = 0; 
-                telaPassando -= 1.0f;
+                telaPassando -= 3.0f;
+
                 if (IsKeyPressed(KEY_ENTER)){
-                    
                     currentScreen = ENDING;
                 }
             } break;
@@ -72,7 +72,7 @@ int main(){
                 case GAMEPLAY:
                 {
                     DrawTextureEx(fundo, (Vector2){ telaPassando, 0 }, 0.0f, 1.0f, WHITE);
-                    DrawTextureEx(fundo, (Vector2){ fundo.width*2 + telaPassando, 0 }, 0.0f, 1.0f, WHITE);
+                    DrawTextureEx(fundo, (Vector2){ fundo.width + telaPassando, 0 }, 0.0f, 1.0f, WHITE);
                     DrawCircleV(posPlayer, 10, BLACK);
 
                 } break;
