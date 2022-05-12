@@ -14,16 +14,18 @@ typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
 int main(){
     // Carregamento das variaveis
     int eixoX = 900, eixoY=600;
-    jogador player;
-    GameScreen currentScreen = LOGO;
-    float telaPassando = 0.0f;
     int frameAtual = 0;
     int totalFrame = 7;
-    float time = 0.0f;
     int direcao = 0;
     int pulo = 0;
     int start; 
+    bool pause = 0;
+    float telaPassando = 0.0f;
+    float time = 0.0f;
+    GameScreen currentScreen = LOGO;
     Vector2 posCivil[3];
+    tiro disparo[30];
+    jogador player;
 
 
     //Abrir a tela
@@ -72,7 +74,7 @@ int main(){
                 }
             } break;
             case GAMEPLAY:
-            {
+            {       
                 if(start == 1){
                     player.posicao.x = 50;
                     player.posicao.y = 425;
@@ -91,15 +93,25 @@ int main(){
                     posCivil[2].x = 1000;
                     posCivil[2].y = 430;
 
+                    pause = 0;
                     start = 0;
                 }
-                if(posCivil[1].x > -250){
-                    posCivil[0].x -= 4.0f;
-                    posCivil[1].x -= 4.0f;
-                    posCivil[2].x -= 4.0f;
+                if (IsKeyPressed(KEY_P)) pause = !pause;
+
+                if(!pause){
+                    if(posCivil[1].x > -250){
+                        posCivil[0].x -= 4.0f;
+                        posCivil[1].x -= 4.0f;
+                        posCivil[2].x -= 4.0f;
+                    }
+
+                    movPlayer(&direcao, &totalFrame, &player, &pulo);
+                    if(direcao == 6){
+                        atirando(player, &disparo);
+                    }
                 }
 
-                movPlayer(&direcao, &totalFrame, &player, &pulo);
+
                 //Posição do player se limitando a meia tela e sem voltar cena
                 if(player.posicao.x >= 450){
                 telaPassando -= 4.0f;
@@ -140,32 +152,35 @@ int main(){
                 } break;
                 case GAMEPLAY:
                 {
-                    DrawTextureEx(fundo, (Vector2){ telaPassando, 0 }, 0.0f, 1.0f, WHITE);
-                    DrawTextureEx(fundo, (Vector2){ fundo.width + telaPassando, 0 }, 0.0f, 1.0f, WHITE);
-                    DrawTextureRec(civil1,(Rectangle) {(civil1.width /10)*frameAtual, 0, civil1.width/10, civil1.height}, posCivil[0], WHITE);
-                    DrawTextureRec(civil2,(Rectangle) {(civil2.width /12)*frameAtual, 0, civil2.width/12, civil2.height}, posCivil[1], WHITE);
-                    DrawTextureRec(civil3,(Rectangle) {(civil3.width /12)*frameAtual, 0, civil3.width/12, civil3.height}, posCivil[2], WHITE);
+                    if(!pause){
+                        DrawTextureEx(fundo, (Vector2){ telaPassando, 0 }, 0.0f, 1.0f, WHITE);
+                        DrawTextureEx(fundo, (Vector2){ fundo.width + telaPassando, 0 }, 0.0f, 1.0f, WHITE);
+                        DrawTextureRec(civil1,(Rectangle) {(civil1.width /10)*frameAtual, 0, civil1.width/10, civil1.height}, posCivil[0], WHITE);
+                        DrawTextureRec(civil2,(Rectangle) {(civil2.width /12)*frameAtual, 0, civil2.width/12, civil2.height}, posCivil[1], WHITE);
+                        DrawTextureRec(civil3,(Rectangle) {(civil3.width /12)*frameAtual, 0, civil3.width/12, civil3.height}, posCivil[2], WHITE);
 
-                    if(direcao == 0){       //Caso ele fique parado
-                        DrawTextureRec(personagemParado,(Rectangle) {(personagemParado.width /totalFrame)*frameAtual, 0, personagemParado.width/totalFrame, personagemParado.height}, player.posicao, WHITE);
+                        if(direcao == 0){       //Caso ele fique parado
+                            DrawTextureRec(personagemParado,(Rectangle) {(personagemParado.width /totalFrame)*frameAtual, 0, personagemParado.width/totalFrame, personagemParado.height}, player.posicao, WHITE);
 
-                    }else if(direcao == 1) {     // Caso ande para direita
-                        DrawTextureRec(personagemDireita,(Rectangle) {(personagemDireita.width /totalFrame)*frameAtual, 0, personagemDireita.width/totalFrame, personagemDireita.height}, player.posicao, WHITE);
+                        }else if(direcao == 1) {     // Caso ande para direita
+                            DrawTextureRec(personagemDireita,(Rectangle) {(personagemDireita.width /totalFrame)*frameAtual, 0, personagemDireita.width/totalFrame, personagemDireita.height}, player.posicao, WHITE);
 
-                    }else if(direcao == 2){     //Caso ande a esquerda
-                        DrawTextureRec(personagemEsquerda,(Rectangle) {(personagemEsquerda.width /totalFrame)*frameAtual, 0, personagemEsquerda.width/totalFrame, personagemEsquerda.height}, player.posicao, WHITE);
-                    }else if(direcao == 3){     //Caso de um Pulo
-                        DrawTextureRec(personagemPulo,(Rectangle) {(personagemPulo.width /totalFrame)*frameAtual, 0, personagemPulo.width/totalFrame, personagemPulo.height}, player.posicao, WHITE);
-                    }else if(direcao == 4){     //Caso ele sente
-                        player.posicao.y +=40;
-                        DrawTextureRec(personagemSentado,(Rectangle) {(personagemSentado.width /totalFrame)*frameAtual, 0, personagemSentado.width/totalFrame, personagemSentado.height}, player.posicao, WHITE);
-                        player.posicao.y -=40;
-                    }else if(direcao == 5){     //Caso dele dando um joinha
-                        DrawTextureRec(personagemJoinha,(Rectangle) {(personagemJoinha.width /totalFrame)*frameAtual, 0, personagemJoinha.width/totalFrame, personagemJoinha.height}, player.posicao, WHITE);
-                    }else if(direcao == 6){
-                        DrawTextureRec(personagemTiro,(Rectangle) {(personagemTiro.width /totalFrame)*frameAtual, 0, personagemTiro.width/totalFrame, personagemTiro.height}, player.posicao, WHITE);
+                        }else if(direcao == 2){     //Caso ande a esquerda
+                            DrawTextureRec(personagemEsquerda,(Rectangle) {(personagemEsquerda.width /totalFrame)*frameAtual, 0, personagemEsquerda.width/totalFrame, personagemEsquerda.height}, player.posicao, WHITE);
+                        }else if(direcao == 3){     //Caso de um Pulo
+                            DrawTextureRec(personagemPulo,(Rectangle) {(personagemPulo.width /totalFrame)*frameAtual, 0, personagemPulo.width/totalFrame, personagemPulo.height}, player.posicao, WHITE);
+                        }else if(direcao == 4){     //Caso ele sente
+                            player.posicao.y +=40;
+                            DrawTextureRec(personagemSentado,(Rectangle) {(personagemSentado.width /totalFrame)*frameAtual, 0, personagemSentado.width/totalFrame, personagemSentado.height}, player.posicao, WHITE);
+                            player.posicao.y -=40;
+                        }else if(direcao == 5){     //Caso dele dando um joinha
+                            DrawTextureRec(personagemJoinha,(Rectangle) {(personagemJoinha.width /totalFrame)*frameAtual, 0, personagemJoinha.width/totalFrame, personagemJoinha.height}, player.posicao, WHITE);
+                        }else if(direcao == 6){
+                            DrawTextureRec(personagemTiro,(Rectangle) {(personagemTiro.width /totalFrame)*frameAtual, 0, personagemTiro.width/totalFrame, personagemTiro.height}, player.posicao, WHITE);
+                        }
+                    }else{
+                        DrawText("Pause", 150, 20, 40, DARKGREEN);
                     }
-                    
                    
                 } break;
                 case ENDING:

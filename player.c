@@ -54,5 +54,8 @@ void movPlayer (int *direcao, int *totalFrame, jogador *player, int *pulo){
 
 }
 
+void atirando (jogador player, tiro *disparo){
+    
+}
 
 void carregaPlayer();
