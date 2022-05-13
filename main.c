@@ -6,7 +6,7 @@
 
 //       mingw32-make PLATFORM=PLATFORM_DESKTOP
 
-typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING } GameScreen;
+typedef enum GameScreen { LOGO = 0, TITLE, GAMEPLAY, ENDING, CONTROLS } GameScreen;
 
 
 
@@ -18,9 +18,9 @@ int main(){
     int totalFrame = 7;
     int direcao = 0;
     int pulo = 0;
-    int start; 
+    int start=1; 
     bool pause = 0;
-    //float telaPassando = 0.0f;
+    float telaPassando = 0.0f;
     float parteFrente = 0.0f;
     float parteMeio = 0.0f;
     float parteMeio2 = 0.0f;
@@ -28,17 +28,26 @@ int main(){
     float time = 0.0f;
     GameScreen currentScreen = LOGO;
     Vector2 posCivil[3];
-    Vector2 mouse = { 0.0f, 0.0f };
     //tiro disparo[30];
     jogador player;
-    int botaoAcao;
-    int botao = 0;      
+    char msg1[20] = {"Start [Enter]"};
+    char msg2[20] = {"Comandos [M]"};
+    char msg3[20] = {"Fechar [Esc]"};
+    char msg4[25] = {"Retornar [M]"};
 
-    Texture botaoI1 = LoadTexture("assets/nomral.png");
+  
 
+ /* //Botao n funfa
+    int botaoAcao=0;
+    int botao = 0;
+    Texture botaoI1 = LoadTexture("assets/normal.png");
+    Texture botaoI2 = LoadTexture("assets/hover.png");
+    Texture botaoI3 = LoadTexture("assets/pressed.png");
+    Vector2 posMouse = { 0.0f, 0.0f };
 
-    Rectangle btnBounds = { eixoY/2.0f - botaoI1.width/2.0f, eixoX/2.0f - botaoI1.height/2.0f, (float)botaoI1.width, (float)botaoI1.height };
-    Rectangle sourceRec = { 0, 0, (float)botaoI1.width, (float)botaoI1.height};
+    Rectangle mouseA = {0.0f, 0.0f, 20.0f, 20.0f};
+    Rectangle btnBounds = { 300.0f, 200.0f , 270.0f, 100.0f };
+    Rectangle sourceRec = { 0.0f, 0.0f, 270.0f, 100.0f};   */
 
 
 
@@ -55,15 +64,13 @@ int main(){
     Texture plano2 = LoadTexture("assets/telaInicial/inicio2plano.png");
     Texture plano3 = LoadTexture("assets/telaInicial/houses2.png");
     Texture plano4 = LoadTexture("assets/telaInicial/inicio4plano.png");
-    Texture botaoI2 = LoadTexture("assets/hover.png");
-    Texture botaoI3 = LoadTexture("assets/pressed.png");
 
     Texture fundo = LoadTexture("assets/Mission 1.png");
     Texture fundoI = LoadTexture("assets/images.png");
     Texture fundoF = LoadTexture("assets/final.png");
     Texture personagemJoinha = LoadTexture("assets/MarcoJoinha.png");
     Texture personagemDireita = LoadTexture("assets/MarcoD.png");
-    Texture personagemEsquerda = LoadTexture("assets/MarcoE.png");
+    Texture personagemEsquerda = LoadTexture("assets/MarcoE.png");      
     Texture personagemParado = LoadTexture("assets/MarcoParado.png");
     Texture personagemSentado = LoadTexture("assets/MarcoSentado.png"); 
     Texture personagemPulo = LoadTexture("assets/MarcoPulo.png");
@@ -91,8 +98,6 @@ int main(){
             case TITLE:
             {
                 start = 1;
-                botaoAcao = 0;
-                botao = 0;
                 parteFrente -= 1.2f;
                 parteMeio -= 0.7f;
                 parteMeio2 -= 0.3f;
@@ -103,23 +108,31 @@ int main(){
                 if (parteMeio2 <= -plano3.width*2) parteMeio2 = 0;
                 if (parteFundo <= -plano4.width*2) parteFundo = 0;
 
-                mouse = GetMousePosition();
+                /* posMouse.x = GetMouseX(); // Mouse n funfa
+                posMouse.y = GetMouseY();
+                mouseA = (Rectangle) {(float)posMouse.x, (float)posMouse.x, 15, 15};
+                botaoAcao = 0;
+                botao = 0;
 
-                if (CheckCollisionPointRec(mouse, btnBounds))
+                if (CheckCollisionRecs(mouseA, btnBounds))
                 {
                     if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) botao = 2;
                     else botao = 1;
 
                     if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) botaoAcao = 1;
                 else botao = 0;
-                }
+                } 
+                if (botaoAcao){
+                    currentScreen = GAMEPLAY;
+                } */
+                
 
                 // Condição de ir a proxima tela
                 if (IsKeyPressed(KEY_ENTER)){
                     currentScreen = GAMEPLAY;
                 }
-                if (botaoAcao){
-                    currentScreen = GAMEPLAY;
+                if (IsKeyPressed(KEY_M)){
+                    currentScreen = CONTROLS;
                 }
 
 
@@ -147,6 +160,7 @@ int main(){
                     pause = 0;
                     start = 0;
                 }
+
                 if (IsKeyPressed(KEY_P)) pause = !pause;
 
                 if(!pause){
@@ -160,18 +174,22 @@ int main(){
                     if(direcao == 6){
                         //atirando(player, &disparo);
                     }
+                }else{
+                    if (IsKeyPressed(KEY_M)){
+                    currentScreen = TITLE;
+                }
                 }
 
 
                 //Posição do player se limitando a meia tela e sem voltar cena
-                /* if(player.posicao.x >= 450){
+                if(player.posicao.x >= 450){
                 telaPassando -= 4.0f;
                 player.posicao.x -= 4.0f;
                 }else if(player.posicao.x <= 0){
                 player.posicao.x += 4.0f;
                 }
                 if (telaPassando <= -fundo.width) telaPassando = 0;  
- */
+ 
                
                 //Condição para passar a proxima tela
                 if (IsKeyPressed(KEY_ENTER)){
@@ -186,6 +204,12 @@ int main(){
                     currentScreen = TITLE;
                 }
             } break;
+            case CONTROLS:
+            {
+                if (IsKeyPressed(KEY_M)){
+                    currentScreen = TITLE;
+                }
+            }break;
             default: 
             break;
         }
@@ -209,20 +233,28 @@ int main(){
                     DrawTextureEx(plano1, (Vector2){ parteFrente, 0 }, 0.0f, 2.0f, WHITE);
                     DrawTextureEx(plano1, (Vector2){ plano4.width*2 + parteFrente, 0 }, 0.0f, 2.0f, WHITE);
 
-                    if(botao == 0){
-                        DrawTextureRec(botaoI1, sourceRec, (Vector2){ btnBounds.x, btnBounds.y }, WHITE);
+                    DrawRectangle(605, 500, 230, 70, BLACK);
+                    DrawRectangle(605, 300, 230, 70, BLACK);
+                    DrawRectangle(605, 400, 230, 70, BLACK);
+                    DrawText(msg1, 620, 320, 30, RED);
+                    DrawText(msg2, 620, 420, 30, RED);
+                    DrawText(msg3, 620, 520, 30, RED);
+
+
+                   /*  if(botao == 0){ //      Mouse n funfa
+                        DrawTextureEx(botaoI1, (Vector2){ 0, 0 }, 0.0f, 0.0f, WHITE);
                     }else if( botao == 1){
                         DrawTextureRec(botaoI2, sourceRec, (Vector2){ btnBounds.x, btnBounds.y }, WHITE);
                     }else if(botao == 2){
                         DrawTextureRec(botaoI3, sourceRec, (Vector2){ btnBounds.x, btnBounds.y }, WHITE);
-                    }
-
+                    } 
+ */
                 } break;
                 case GAMEPLAY:
                 {
                     if(!pause){
-                        //DrawTextureEx(fundo, (Vector2){ telaPassando, 0 }, 0.0f, 1.0f, WHITE);
-                        //DrawTextureEx(fundo, (Vector2){ fundo.width + telaPassando, 0 }, 0.0f, 1.0f, WHITE);
+                        DrawTextureEx(fundo, (Vector2){ telaPassando, 0 }, 0.0f, 1.0f, WHITE);
+                        DrawTextureEx(fundo, (Vector2){ fundo.width + telaPassando, 0 }, 0.0f, 1.0f, WHITE);
                         DrawTextureRec(civil1,(Rectangle) {(civil1.width /10)*frameAtual, 0, civil1.width/10, civil1.height}, posCivil[0], WHITE);
                         DrawTextureRec(civil2,(Rectangle) {(civil2.width /12)*frameAtual, 0, civil2.width/12, civil2.height}, posCivil[1], WHITE);
                         DrawTextureRec(civil3,(Rectangle) {(civil3.width /12)*frameAtual, 0, civil3.width/12, civil3.height}, posCivil[2], WHITE);
@@ -247,7 +279,8 @@ int main(){
                             DrawTextureRec(personagemTiro,(Rectangle) {(personagemTiro.width /totalFrame)*frameAtual, 0, personagemTiro.width/totalFrame, personagemTiro.height}, player.posicao, WHITE);
                         }
                     }else{
-                        DrawText("Pause", 150, 20, 40, DARKGREEN);
+                        DrawText("Pause", 50, 20, 60, DARKGREEN);
+                        DrawText("Retornar ao Menu [M]", 550, 520, 30, RED);
                     }
                    
                 } break;
@@ -258,6 +291,31 @@ int main(){
                     DrawText("Para voltar a tela inicial aperte o enter", 250, 50, 20, DARKBLUE);
 
                 } break;
+                case CONTROLS:
+                {
+                    DrawTextureEx(plano4, (Vector2){ parteFundo, 0 }, 0.0f, 2.0f, WHITE);
+                    DrawTextureEx(plano4, (Vector2){ plano4.width*2 + parteFundo, 0 }, 0.0f, 2.0f, WHITE);
+
+                    DrawTextureEx(plano3, (Vector2){ parteMeio2, 0 }, 0.0f, 2.0f, WHITE);
+                    DrawTextureEx(plano3, (Vector2){ plano3.width*2 + parteMeio2, 0 }, 0.0f, 2.0f, WHITE);
+
+                    DrawTextureEx(plano2, (Vector2){ parteMeio, 0 }, 0.0f, 2.0f, WHITE);
+                    DrawTextureEx(plano2, (Vector2){ plano2.width*2 + parteMeio, 0 }, 0.0f, 2.0f, WHITE);
+
+                    DrawTextureEx(plano1, (Vector2){ parteFrente, 0 }, 0.0f, 2.0f, WHITE);
+                    DrawTextureEx(plano1, (Vector2){ plano4.width*2 + parteFrente, 0 }, 0.0f, 2.0f, WHITE);
+
+                    DrawRectangle(605, 500, 230, 70, BLACK);
+                    DrawText(msg4, 620, 520, 30, RED);
+                    DrawText("Controles:", 20, 20, 50, WHITE);
+                    DrawText("W,A,S,D ou as setas do teclado", 20, 75, 25, RED);
+                    DrawText(" para andar", 410, 75, 25, BLACK);
+                    DrawText("ESPAÇO", 20, 105, 25, RED);
+                    DrawText(" para atirar", 120, 105, 25, BLACK);
+
+
+                } break;
+
                 default: break;
             }
 
@@ -265,10 +323,10 @@ int main(){
         EndDrawing();
     }
 
-
-    UnloadTexture(botaoI1);
+/* 
+    UnloadTexture(botaoI1); // Mouse n funfa
     UnloadTexture(botaoI2);
-    UnloadTexture(botaoI3);
+    UnloadTexture(botaoI3);   */
     UnloadTexture(plano4);
     UnloadTexture(plano3);
     UnloadTexture(plano2);
