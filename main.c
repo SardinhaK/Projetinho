@@ -20,12 +20,26 @@ int main(){
     int pulo = 0;
     int start; 
     bool pause = 0;
-    float telaPassando = 0.0f;
+    //float telaPassando = 0.0f;
+    float parteFrente = 0.0f;
+    float parteMeio = 0.0f;
+    float parteMeio2 = 0.0f;
+    float parteFundo = 0.0f;
     float time = 0.0f;
     GameScreen currentScreen = LOGO;
     Vector2 posCivil[3];
-    tiro disparo[30];
+    Vector2 mouse = { 0.0f, 0.0f };
+    //tiro disparo[30];
     jogador player;
+    int botaoAcao;
+    int botao = 0;      
+
+    Texture botaoI1 = LoadTexture("assets/nomral.png");
+
+
+    Rectangle btnBounds = { eixoY/2.0f - botaoI1.width/2.0f, eixoX/2.0f - botaoI1.height/2.0f, (float)botaoI1.width, (float)botaoI1.height };
+    Rectangle sourceRec = { 0, 0, (float)botaoI1.width, (float)botaoI1.height};
+
 
 
     //Abrir a tela
@@ -35,6 +49,15 @@ int main(){
 
     //Carregamento das texturas
     //Texture fundo = LoadTexture("assets/copa.png");
+
+    //Frente
+    Texture plano1 = LoadTexture("assets/telaInicial/inicio1plano.png");
+    Texture plano2 = LoadTexture("assets/telaInicial/inicio2plano.png");
+    Texture plano3 = LoadTexture("assets/telaInicial/houses2.png");
+    Texture plano4 = LoadTexture("assets/telaInicial/inicio4plano.png");
+    Texture botaoI2 = LoadTexture("assets/hover.png");
+    Texture botaoI3 = LoadTexture("assets/pressed.png");
+
     Texture fundo = LoadTexture("assets/Mission 1.png");
     Texture fundoI = LoadTexture("assets/images.png");
     Texture fundoF = LoadTexture("assets/final.png");
@@ -68,10 +91,38 @@ int main(){
             case TITLE:
             {
                 start = 1;
+                botaoAcao = 0;
+                botao = 0;
+                parteFrente -= 1.2f;
+                parteMeio -= 0.7f;
+                parteMeio2 -= 0.3f;
+                parteFundo -= 0.1f;
+
+                if (parteFrente <= -plano1.width*2) parteFrente = 0;
+                if (parteMeio <= -plano2.width*2) parteMeio = 0;
+                if (parteMeio2 <= -plano3.width*2) parteMeio2 = 0;
+                if (parteFundo <= -plano4.width*2) parteFundo = 0;
+
+                mouse = GetMousePosition();
+
+                if (CheckCollisionPointRec(mouse, btnBounds))
+                {
+                    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) botao = 2;
+                    else botao = 1;
+
+                    if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT)) botaoAcao = 1;
+                else botao = 0;
+                }
+
                 // Condição de ir a proxima tela
                 if (IsKeyPressed(KEY_ENTER)){
                     currentScreen = GAMEPLAY;
                 }
+                if (botaoAcao){
+                    currentScreen = GAMEPLAY;
+                }
+
+
             } break;
             case GAMEPLAY:
             {       
@@ -83,7 +134,7 @@ int main(){
                     player.colisao.height = 140;
                     player.colisao.width = 50;
                     
-                    telaPassando = 0.0f;
+                    //telaPassando = 0.0f;
                     direcao = 0;
                     pulo = 0;
                     posCivil[0].x = 1100;
@@ -107,20 +158,20 @@ int main(){
 
                     movPlayer(&direcao, &totalFrame, &player, &pulo);
                     if(direcao == 6){
-                        atirando(player, &disparo);
+                        //atirando(player, &disparo);
                     }
                 }
 
 
                 //Posição do player se limitando a meia tela e sem voltar cena
-                if(player.posicao.x >= 450){
+                /* if(player.posicao.x >= 450){
                 telaPassando -= 4.0f;
                 player.posicao.x -= 4.0f;
                 }else if(player.posicao.x <= 0){
                 player.posicao.x += 4.0f;
                 }
-                if (telaPassando <= -fundo.width) telaPassando = 0; 
-
+                if (telaPassando <= -fundo.width) telaPassando = 0;  
+ */
                
                 //Condição para passar a proxima tela
                 if (IsKeyPressed(KEY_ENTER)){
@@ -145,16 +196,33 @@ int main(){
             switch(currentScreen) // Tela de fundo
             {
                 case TITLE:
-                {
-                    DrawTexture(fundoI, 0, 0, WHITE);
-                    DrawText("Pau neles", 150, 20, 40, DARKGREEN);
-                    DrawText("Para começar aperte o enter", 350, 50, 20, DARKGREEN);
+                {  
+                    DrawTextureEx(plano4, (Vector2){ parteFundo, 0 }, 0.0f, 2.0f, WHITE);
+                    DrawTextureEx(plano4, (Vector2){ plano4.width*2 + parteFundo, 0 }, 0.0f, 2.0f, WHITE);
+
+                    DrawTextureEx(plano3, (Vector2){ parteMeio2, 0 }, 0.0f, 2.0f, WHITE);
+                    DrawTextureEx(plano3, (Vector2){ plano3.width*2 + parteMeio2, 0 }, 0.0f, 2.0f, WHITE);
+
+                    DrawTextureEx(plano2, (Vector2){ parteMeio, 0 }, 0.0f, 2.0f, WHITE);
+                    DrawTextureEx(plano2, (Vector2){ plano2.width*2 + parteMeio, 0 }, 0.0f, 2.0f, WHITE);
+
+                    DrawTextureEx(plano1, (Vector2){ parteFrente, 0 }, 0.0f, 2.0f, WHITE);
+                    DrawTextureEx(plano1, (Vector2){ plano4.width*2 + parteFrente, 0 }, 0.0f, 2.0f, WHITE);
+
+                    if(botao == 0){
+                        DrawTextureRec(botaoI1, sourceRec, (Vector2){ btnBounds.x, btnBounds.y }, WHITE);
+                    }else if( botao == 1){
+                        DrawTextureRec(botaoI2, sourceRec, (Vector2){ btnBounds.x, btnBounds.y }, WHITE);
+                    }else if(botao == 2){
+                        DrawTextureRec(botaoI3, sourceRec, (Vector2){ btnBounds.x, btnBounds.y }, WHITE);
+                    }
+
                 } break;
                 case GAMEPLAY:
                 {
                     if(!pause){
-                        DrawTextureEx(fundo, (Vector2){ telaPassando, 0 }, 0.0f, 1.0f, WHITE);
-                        DrawTextureEx(fundo, (Vector2){ fundo.width + telaPassando, 0 }, 0.0f, 1.0f, WHITE);
+                        //DrawTextureEx(fundo, (Vector2){ telaPassando, 0 }, 0.0f, 1.0f, WHITE);
+                        //DrawTextureEx(fundo, (Vector2){ fundo.width + telaPassando, 0 }, 0.0f, 1.0f, WHITE);
                         DrawTextureRec(civil1,(Rectangle) {(civil1.width /10)*frameAtual, 0, civil1.width/10, civil1.height}, posCivil[0], WHITE);
                         DrawTextureRec(civil2,(Rectangle) {(civil2.width /12)*frameAtual, 0, civil2.width/12, civil2.height}, posCivil[1], WHITE);
                         DrawTextureRec(civil3,(Rectangle) {(civil3.width /12)*frameAtual, 0, civil3.width/12, civil3.height}, posCivil[2], WHITE);
@@ -198,7 +266,13 @@ int main(){
     }
 
 
-
+    UnloadTexture(botaoI1);
+    UnloadTexture(botaoI2);
+    UnloadTexture(botaoI3);
+    UnloadTexture(plano4);
+    UnloadTexture(plano3);
+    UnloadTexture(plano2);
+    UnloadTexture(plano1);
     UnloadTexture(fundo);
     UnloadTexture(fundoI);
     UnloadTexture(fundoF);
@@ -219,7 +293,7 @@ int main(){
     
     
     CloseWindow();
-
     CloseAudioDevice();
+    
     return 0;
 }

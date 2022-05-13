@@ -10,7 +10,7 @@ typedef struct{
     Vector2 posicao;
 } tiro;
 
-void atirando (jogador player, tiro *disparo);
+//void atirando (jogador player, tiro *disparo);
 
 void movPlayer (int *direcao, int *totalFrame, jogador *player, int *pulo);
 
