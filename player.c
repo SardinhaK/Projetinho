@@ -4,11 +4,14 @@
 
 
 
-void movPlayer (int *direcao, int *totalFrame, jogador *player, int *pulo){
-    float velPulo= 7.0f;
+void movPlayer (int *direcao, int *totalFrame, jogador *player, int *pulo, Rectangle *grid){
     //Controles do personagem
     *direcao = 0;
     *totalFrame = 6;
+    if((*player).colisao.y >= 650){
+        (*player).colisao.y= -100;
+        (*player).posicao.y= -100;
+    }
     
     if(IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_T)){
         *direcao = 6;
@@ -17,65 +20,63 @@ void movPlayer (int *direcao, int *totalFrame, jogador *player, int *pulo){
     if(IsKeyDown(KEY_S) || IsKeyDown(KEY_DOWN)){
         *direcao = 4;
         *totalFrame = 7;
-        (*player).colisao.height = 90.0f;
-        (*player).colisao.y = (*player).posicao.y + 50.0f;
+        (*player).colisao.height = 70.0f;
+        (*player).colisao.y = (*player).posicao.y;
     }else{
         (*player).colisao.height = 140.0f;
-        (*player).colisao.y = (*player).posicao.y;
     }
+
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)){
-        (*player).posicao.x += (*player).velocidade;
-        (*player).colisao.x += (*player).velocidade;
+        (*player).posicao.x += (*player).velocidade.x;
+        (*player).colisao.x += (*player).velocidade.x;
         *direcao = 1;
         *totalFrame = 11;
     }
+
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)){
-        (*player).posicao.x -= (*player).velocidade;
-        (*player).colisao.x -= (*player).velocidade;
+        (*player).posicao.x -= (*player).velocidade.x;
+        (*player).colisao.x -= (*player).velocidade.x;
         *direcao = 2;
         *totalFrame = 11;
+        if((*player).posicao.x <= -40){
+            (*player).posicao.x += (*player).velocidade.x;
+            (*player).colisao.x += (*player).velocidade.x;
+        }
     }
     if ((IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) && *pulo == 0  ){
         *pulo = 1;
+        (*player).posicao.y -= 230;
+        (*player).colisao.y -= 230;
     }
     if (IsKeyDown(KEY_J)){
         *direcao = 5;
         *totalFrame = 7;
     }
 
-
-
+    //Colisão
+    int platColisao = 0;
+    for(int i = 0; i<3; i++){
+        Rectangle plataform = grid[i];
+        Vector2 *r = &((*player).posicao);
+        if(plataform.x <= r->x && plataform.x + plataform.width >= r->x &&
+        plataform.y == r->y + (*player).colisao.height){
+            platColisao = 1;
+        }
+        DrawRectangle(plataform.x, plataform.y, plataform.width, plataform.height, RED);
+    }
     
-
-
-
-
-    //Pulo
-    if((*pulo == 1) && (*player).posicao.y >= 225){
-        (*player).posicao.y -= velPulo;
-        (*player).colisao.y -= velPulo;
-        *direcao = 3;
-        *totalFrame =13;
-    } 
-    if((*player).posicao.y <= 225) *pulo = 2;
-    if((*pulo == 2) && ((*player).posicao.y != 425)){
-        (*player).posicao.y += velPulo;
-        (*player).colisao.y += velPulo;
+    if(!platColisao){
+        (*player).posicao.y += (*player).velocidade.y;
+        (*player).colisao.y += (*player).velocidade.y;
+        (*player).velocidade.y = 10.0;
         *direcao = 3;
         *totalFrame = 13;
+    }else{
+        *pulo = 0;
+        (*player).velocidade.y = 0;
     } 
-    if((*player).posicao.y == 425) *pulo = 0;
 
 }
-
-/* void atirando (jogador player, tiro *disparo){
-    
-} */
-
-void carregaPlayer();
-
-
-
 
 void atirar(int *shootRate, shoot **disparo, jogador *player){
     *shootRate += 5;

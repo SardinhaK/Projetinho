@@ -39,12 +39,24 @@ int main(){
     int start=1; 
     int flagMorreu=0;
     int flagVenceu=0;
+    int HIT;
 
-    /* Rectangle grid[10];
-    grid[0].width = 100;
-    grid[0].height = 30;
-    grid[0].x = 200;
-    grid[0].y = 450; */
+    Rectangle grid[10];
+    grid[0].width = 1200;
+    grid[0].height = 20;
+    grid[0].x = -100;
+    grid[0].y = 580;
+
+    grid[1].width = 1200;
+    grid[1].height = 20;
+    grid[1].x = -100;
+    grid[1].y = 380;
+
+    grid[2].width = 1200;
+    grid[2].height = 20;
+    grid[2].x = -100;
+    grid[2].y = 180;
+     
    
   
 
@@ -78,12 +90,15 @@ int main(){
     Texture fase3 = LoadTexture("assets/War4.png");
     Texture inimigoIm = LoadTexture("assets/bills.png");
     Texture imBala = LoadTexture("assets/tiro.png");
+    Texture nuvem = LoadTexture("assets/nuvem.png");
+    Texture pauseIm = LoadTexture("assets/pause.png");
 
     Sound pulou = LoadSound("assets/pulo.mp3");   
     Sound joia = LoadSound("assets/joinha.mp3");
     Sound musMenu = LoadSound("assets/menu_theme.mp3");
     Sound musGame = LoadSound("assets/gameplay_theme.mp3");
     Sound musDerrota = LoadSound("assets/gameover_theme.mp3");
+    Sound musVitoria = LoadSound("assets/youwin_theme.mp3");
 
     currentScreen = TITLE;
 
@@ -102,6 +117,9 @@ int main(){
             {
                 if(flagMenu ==1){
                     PlaySound(musMenu);
+                    StopSound(musDerrota);
+                    StopSound(musGame);
+                    StopSound(musVitoria);
                     flagMenu =0;
                 }
                 start = 1;
@@ -131,32 +149,36 @@ int main(){
             case GAMEPLAY:
             {       
                 if(start == 1){
+                    HIT = 1;
                     StopSound(musMenu);
+                    StopSound(musDerrota);
                     PlaySound(musGame);
+                    StopSound(musVitoria);
                     if(nivel ==1){
-                        vidaIni = 15;
+                        vidaIni = 35;
                         movIni = 5; 
-                        player.velocidade = 7.0f;
+                        player.velocidade.x = 7.0f;
                         qtdBalaInimigo = 6;
                     }
                     if(nivel == 2){
-                        vidaIni = 45;
+                        vidaIni = 75;
                         movIni = 8; 
-                        player.velocidade = 10.0f;
+                        player.velocidade.x = 10.0f;
                         qtdBalaInimigo = 10;
                     }
                     if(nivel ==3){
-                        vidaIni = 95;
+                        vidaIni = 105;
                         movIni = 10; 
-                        player.velocidade = 13.0f;
-                        qtdBalaInimigo = 15;
+                        player.velocidade.x = 13.0f;
+                        qtdBalaInimigo = 12;
                     }
+                    player.velocidade.y = 20.0f;
                     player.posicao.x = 50;
-                    player.posicao.y = 425;
-                    player.colisao.x = 75;
-                    player.colisao.y = 425;
+                    player.posicao.y = 420-400;
+                    player.colisao.x = 95;
+                    player.colisao.y = 420-400;
                     player.colisao.height = 140;
-                    player.colisao.width = 50;
+                    player.colisao.width = 30;
                     
                     direcao = 0;
                     pulo = 0;
@@ -177,7 +199,9 @@ int main(){
                         disparo[i].projet.height = 3;
                         disparo[i].vel.x = 15;
                         disparo[i].vel.y = 0;
-                        disparo[i].active = false;
+                        DrawRectangleRec(grid[0], RED);
+                        DrawRectangleRec(grid[1], RED);
+                        DrawRectangleRec(grid[2], RED);   disparo[i].active = false;
                         disparo[i].color = YELLOW;
                     }
                     for (int i = 0; i < qtdBalaInimigo; i++)
@@ -202,7 +226,8 @@ int main(){
                         posCivil[2].x -= 4.0f;
                     }
  
-                    movPlayer(&direcao, &totalFrame, &player, &pulo);
+                    movPlayer(&direcao, &totalFrame, &player, &pulo, &grid);
+                    if(direcao == 5) HIT = 0;
                     if(direcao == 6 ){
                         shootRate += 5;
 
@@ -248,8 +273,10 @@ int main(){
                     for (int i = 0; i < qtdBalaInimigo; i++)
                     {
                         if (CheckCollisionRecs(player.colisao, disparoInimigo[i].projet)){
-                            currentScreen = ENDING;
-                            flagMorreu =1;
+                            if(HIT == 1){
+                                currentScreen = ENDING;
+                                flagMorreu =1;
+                            }
                         } 
                     }
 
@@ -273,7 +300,10 @@ int main(){
                     //currentScreen = WIN;
                 }                
                 if(vidaIni == 0) nivel++;
-                if(nivel == 4)currentScreen = WIN;
+                if(nivel == 4){
+                    flagVenceu =1;
+                    currentScreen = WIN;
+                }
             } break;
             
             case ENDING:
@@ -281,6 +311,7 @@ int main(){
                 if(flagMorreu ==1){
                     StopSound(musGame);
                     PlaySound(musDerrota);
+                    StopSound(musVitoria);
                     flagMorreu =0;
                 }
                 //Condição para passar a proxima tela
@@ -297,6 +328,13 @@ int main(){
             }break;
             case WIN:
             {
+                if(flagVenceu == 1){
+                    flagVenceu = 0;
+                    PlaySound(musVitoria);
+                    StopSound(musGame);
+                    StopSound(musDerrota);
+                    StopSound(musMenu);
+                }
                 if (IsKeyPressed(KEY_ENTER)){
                     currentScreen = TITLE;
                     flagMenu =1;
@@ -331,9 +369,10 @@ int main(){
                     DrawText("Start [Enter]", 620, 320, 30, RED);
                     DrawText("Comandos [M]", 620, 420, 30, RED);
                     DrawText("Fechar [Esc]", 620, 520, 30, RED);
-                    DrawText("NOME DO JOGO!", 20, 20, 70, WHITE);
-                    DrawText("Mate o maximo de inimigos que puder", 20, 100, 30, BLACK);
-                    DrawText("A sua pontuação depende disso!", 20, 140, 30, RED);
+                    DrawText("MARCO     BILLS!", 20, 20, 70, WHITE);
+                    DrawText("VS", 290, 20, 70, BLACK);
+                    //DrawText("Mate o maximo de inimigos que puder", 20, 100, 30, BLACK);
+                    //DrawText("A sua pontuação depende disso!", 20, 140, 30, RED);
 
                   
                 } break;
@@ -343,11 +382,15 @@ int main(){
                         DrawTexture(fase1, 0, 0, WHITE);
                         if(nivel ==2)DrawTexture(fase2, 0, 0, WHITE);
                         if(nivel ==3)DrawTexture(fase3, 0, 0, WHITE);
+                        DrawTexture(nuvem, grid[0].x, grid[0].y, WHITE);
+                        DrawTexture(nuvem, grid[1].x, grid[1].y, WHITE);
+                        DrawTexture(nuvem, grid[2].x, grid[2].y, WHITE);
                         DrawTextureRec(inimigoIm,(Rectangle) {(inimigoIm.width /4)*frameAtual, 0, inimigoIm.width/4, personagemEsquerda.height}, (Vector2){(inimigo.x-30), inimigo.y}, WHITE);
                         DrawTextureRec(civil1,(Rectangle) {(civil1.width /10)*frameAtual, 0, civil1.width/10, civil1.height}, posCivil[0], WHITE);
                         DrawTextureRec(civil2,(Rectangle) {(civil2.width /12)*frameAtual, 0, civil2.width/12, civil2.height}, posCivil[1], WHITE);
                         DrawTextureRec(civil3,(Rectangle) {(civil3.width /12)*frameAtual, 0, civil3.width/12, civil3.height}, posCivil[2], WHITE);
 
+                        
                         if(direcao == 0){       //Caso ele fique parado
                             DrawTextureRec(personagemParado,(Rectangle) {(personagemParado.width /totalFrame)*frameAtual, 0, personagemParado.width/totalFrame, personagemParado.height}, player.posicao, WHITE);
 
@@ -374,21 +417,21 @@ int main(){
                         {
                             if (disparoInimigo[i].active) {
                                 DrawTexture(imBala, disparoInimigo[i].projet.x-5, disparoInimigo[i].projet.y-5, WHITE);
-                                //DrawRectangleRec(disparoInimigo[i].projet, disparoInimigo[i].color); //Hitbox tiro inimigo
                             }
                         }
                         //DrawRectangleRec(player.colisao, BLACK); //Hitbox player
                     }else{
-                        DrawText("Pause", 50, 20, 60, DARKGREEN);
-                        DrawText("Retornar ao Menu [M]", 550, 520, 30, RED);
+                        DrawTexture(pauseIm, 0, 47, WHITE);
+                        DrawText("Pause", 50, 0, 47, DARKGREEN);
+                        DrawText("Retornar ao Menu [M]", 550, 565, 30, RED);
                     }
                    
                 } break;
                 case ENDING:
                 {
                     DrawTexture(fundoF, 44, 0, WHITE);
-                    DrawText("Morreu? NOOB!!!", 250, 20, 40, DARKBLUE);
-                    DrawText("Para voltar a tela inicial aperte o enter", 250, 50, 20, DARKBLUE);
+                    DrawText("Morreu? NOOB!!!", 250, 20, 40, RED);
+                    DrawText("Para voltar a tela inicial aperte o enter", 250, 60, 20, GRAY);
 
                 } break;
                 case CONTROLS:
@@ -412,6 +455,8 @@ int main(){
                     DrawText(" para andar", 410, 75, 25, BLACK);
                     DrawText("ESPAÇO", 20, 105, 25, RED);
                     DrawText(" para atirar", 120, 105, 25, BLACK);
+                    DrawText("P", 20, 135, 25, RED);
+                    DrawText(" para pausar", 35, 135, 25, BLACK);
 
 
                 } break;
@@ -446,12 +491,16 @@ int main(){
     UnloadTexture(civil1);
     UnloadTexture(civil2);
     UnloadTexture(civil3);
+    UnloadTexture(nuvem);
+    UnloadTexture(pauseIm);
+
 
     UnloadSound(pulou);
     UnloadSound(joia);
     UnloadSound(musMenu);
     UnloadSound(musGame);
     UnloadSound(musDerrota);
+    UnloadSound(musVitoria);
 
     
     

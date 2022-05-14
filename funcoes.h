@@ -4,7 +4,7 @@
 typedef struct{
     Vector2 posicao;
     Rectangle colisao;
-    float velocidade;
+    Vector2 velocidade;
 } jogador;
 
 
@@ -22,11 +22,6 @@ typedef struct {
     Color color;
 } shootInimigo;
 
-void movPlayer (int *direcao, int *totalFrame, jogador *player, int *pulo);
-
-void carregaPlayer();
+void movPlayer (int *direcao, int *totalFrame, jogador *player, int *pulo, Rectangle *grid);
 
 void atirar(int *shootRate, shoot **disparo, jogador *player);
-Texture2D loadMap();
-
-void colisionMap(Rectangle grid[], jogador *player);
